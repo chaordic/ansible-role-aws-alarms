@@ -1,0 +1,8 @@
+galaxy_info:
+  author: Cloud_Operations<opensource@chaordicsystems.com>
+  description: Setup AWS CloudWatch Alarms
+  company: Linx_Neemu_Chaordic
+  license: GPLv3
+  min_ansible_version: 2.3
+  galaxy_tags: []
+dependencies: []

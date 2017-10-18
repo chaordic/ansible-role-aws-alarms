@@ -1,0 +1,7 @@
+---
+# tasks file for aws-alarms
+
+- include: setup.yml
+  with_items: "{{ aws_alarms }}"
+  loop_control:
+    loop_var: i_alarm
