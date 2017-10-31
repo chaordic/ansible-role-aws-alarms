@@ -3,8 +3,10 @@ Role Name
 
 Setup AWS CloudWatch Alarms.
 
-**LIMITATION**: Now this role only setup EC2 instances as a resources and
-lookup the tag `ansible_host` in all instances of the default region.
+**LIMITATION**:
+
+* Setup EC2 instances as a resources and lookup the tag `ansible_host` in all instances of the default region.
+* Setup ELB Target Group Alarms
 
 Requirements
 ------------
@@ -25,8 +27,6 @@ TODO
 Example Playbook
 ----------------
 
-TODO:
-
     - hosts: servers
       vars:
         aws_alarms:
@@ -44,6 +44,24 @@ TODO:
             period: 60
             evaluation_periods: 3
             unit: "Percent"
+            alarm_actions: ["arn:aws:sns:us-east-1:<AWS_ACCOUNT_ID>:<SNS_ALERT>"]
+            insufficient_data_actions: ["arn:aws:sns:us-east-1:<AWS_ACCOUNT_ID>:<SNS_ALERT>"]
+            ok_actions: ["arn:aws:sns:us-east-1:<AWS_ACCOUNT_ID>:<SNS_ALERT>"]
+
+          - name: tg-alarm-prefix-Unhealthy-Hosts
+            namespace: "AWS/ApplicationELB"
+            resources:
+              - name_sufix: "sufix-alarm"
+                LoadBalancer: my-elbv2-name/ffffffffffffffff
+                TargetGroup: targetgroup/my-tg-name/ffffffffffffffff
+            region: us-east-1
+            metric: "UnHealthyHostCount"
+            statistic: Average
+            comparison: ">="
+            threshold: 1
+            period: 60
+            evaluation_periods: 10
+            unit: "Count"
             alarm_actions: ["arn:aws:sns:us-east-1:<AWS_ACCOUNT_ID>:<SNS_ALERT>"]
             insufficient_data_actions: ["arn:aws:sns:us-east-1:<AWS_ACCOUNT_ID>:<SNS_ALERT>"]
             ok_actions: ["arn:aws:sns:us-east-1:<AWS_ACCOUNT_ID>:<SNS_ALERT>"]

@@ -1,5 +1,4 @@
 ---
-# These tasks are called by playbook rebuild-alarms.yml
 - debug: var=i_alarm
 
 # Only support lookup by ec2_tag

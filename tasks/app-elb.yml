@@ -1,0 +1,28 @@
+---
+- debug: var=i_alarm
+
+- name: "Setup {{i_alarm.name}} | Add alarm metric for each resource"
+  ec2_metric_alarm:
+    state: present
+    region: "{{ i_alarm.region }}"
+    name: "{{ i_alarm.name }}-{{ item.name_sufix }}"
+    description: "{{ i_alarm.name }}-{{ item.name_sufix }} - Created by ansible"
+    metric: "{{ i_alarm.metric }}"
+    namespace: "{{ i_alarm.namespace }}"
+    statistic: "{{ i_alarm.statistic }}"
+    comparison: "{{ i_alarm.comparison }}"
+    threshold: "{{ i_alarm.threshold }}"
+    period: "{{ i_alarm.period }}"
+    evaluation_periods: "{{ i_alarm.evaluation_periods }}"
+    unit: "{{ i_alarm.unit }}"
+    dimensions:
+      LoadBalancer: "{{ item.LoadBalancer }}"
+      TargetGroup: "{{ item.TargetGroup }}"
+    alarm_actions: "{{ i_alarm.alarm_actions }}"
+    insufficient_data_actions: "{{ i_alarm.insufficient_data_actions }}"
+    ok_actions: "{{ i_alarm.ok_actions }}"
+  with_items: "{{ i_alarm.resources }}"
+  when: i_alarm.namespace == "AWS/ApplicationELB"
+  register: ret_alarm
+
+- debug: var=ret_alarm
