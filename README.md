@@ -52,8 +52,9 @@ Example Playbook
             namespace: "AWS/ApplicationELB"
             resources:
               - name_sufix: "sufix-alarm"
-                LoadBalancer: my-elbv2-name/ffffffffffffffff
-                TargetGroup: targetgroup/my-tg-name/ffffffffffffffff
+                dimensions:
+                  LoadBalancer: my-elbv2-name/ffffffffffffffff
+                  TargetGroup: targetgroup/my-tg-name/ffffffffffffffff
             region: us-east-1
             metric: "UnHealthyHostCount"
             statistic: Average

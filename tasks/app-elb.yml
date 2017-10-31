@@ -15,9 +15,7 @@
     period: "{{ i_alarm.period }}"
     evaluation_periods: "{{ i_alarm.evaluation_periods }}"
     unit: "{{ i_alarm.unit }}"
-    dimensions:
-      LoadBalancer: "{{ item.LoadBalancer }}"
-      TargetGroup: "{{ item.TargetGroup }}"
+    dimensions: "{{ item.dimensions }}"
     alarm_actions: "{{ i_alarm.alarm_actions }}"
     insufficient_data_actions: "{{ i_alarm.insufficient_data_actions }}"
     ok_actions: "{{ i_alarm.ok_actions }}"
