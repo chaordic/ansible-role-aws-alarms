@@ -1,7 +1,14 @@
 ---
 # tasks file for aws-alarms
 
-- include: setup.yml
+- include: ec2.yml
   with_items: "{{ aws_alarms }}"
+  when: i_alarm.namespace == "AWS/EC2"
+  loop_control:
+    loop_var: i_alarm
+
+- include: app-elb.yml
+  with_items: "{{ aws_alarms }}"
+  when: i_alarm.namespace == "AWS/ApplicationELB"
   loop_control:
     loop_var: i_alarm
