@@ -30,11 +30,29 @@ Example Playbook
     - hosts: servers
       vars:
         aws_alarms:
-          - name: instance-name-CPU_Utilization
-            name_sufix: "CPU_Utilization"
-            filter_type: "ec2_tag"
-            filter_host:
-              -  "lookup-in-tag-ansible_host"
+          - name: CPU_Utilization
+            filter_type: "ec2_fact"
+            filter_ec2_fact:
+              "tag:ansible_host": "lookup-in-tag-ansible_host"
+            region: us-east-1
+            metric: "CPUUtilization"
+            namespace: "AWS/EC2"
+            statistic: Average
+            comparison: ">="
+            threshold: 75.0
+            period: 60
+            evaluation_periods: 3
+            unit: "Percent"
+            alarm_actions: ["arn:aws:sns:us-east-1:<AWS_ACCOUNT_ID>:<SNS_ALERT>"]
+            insufficient_data_actions: ["arn:aws:sns:us-east-1:<AWS_ACCOUNT_ID>:<SNS_ALERT>"]
+            ok_actions: ["arn:aws:sns:us-east-1:<AWS_ACCOUNT_ID>:<SNS_ALERT>"]
+
+          - name: CPU_Utilization
+            ec2_resources:
+              - id: i-ffffffffffffffff
+                name: myInstance1
+              - id: i-0000000000000000
+                name: myInstance2
             region: us-east-1
             metric: "CPUUtilization"
             namespace: "AWS/EC2"
@@ -51,7 +69,7 @@ Example Playbook
           - name: tg-alarm-prefix-Unhealthy-Hosts
             namespace: "AWS/ApplicationELB"
             resources:
-              - name_sufix: "sufix-alarm"
+              - name: "name-sufix-alarm"
                 dimensions:
                   LoadBalancer: my-elbv2-name/ffffffffffffffff
                   TargetGroup: targetgroup/my-tg-name/ffffffffffffffff

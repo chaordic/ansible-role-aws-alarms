@@ -5,8 +5,8 @@
   ec2_metric_alarm:
     state: present
     region: "{{ i_alarm.region }}"
-    name: "{{ i_alarm.name }}-{{ item.name_sufix }}"
-    description: "{{ i_alarm.name }}-{{ item.name_sufix }} - Created by ansible"
+    name: "{{ i_alarm.name }}-{{ item.name }}"
+    description: "{{ i_alarm.name }}-{{ item.name }} - Created by ansible"
     metric: "{{ i_alarm.metric }}"
     namespace: "{{ i_alarm.namespace }}"
     statistic: "{{ i_alarm.statistic }}"

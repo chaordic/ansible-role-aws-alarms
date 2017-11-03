@@ -1,24 +1,41 @@
 ---
-- debug: var=i_alarm
+- name: Show Alarms definition
+  debug:
+    var: i_alarm
 
-# Only support lookup by ec2_tag
-- name: "Setup {{i_alarm.name}} | Getting resources"
-  ec2_remote_facts:
-    filters:
-      "tag:ansible_host": "{{ item }}"
-  when: i_alarm.filter_type == 'ec2_tag'
-  with_items: "{{ i_alarm.filter_host }}"
-  register: resource_filtered
+- set_fact:
+    ec2_resources: []
 
-- name: "Setup {{i_alarm.name}} | Show resources"
-  debug: var=resource_filtered
+- block:
+    - name: "Setup {{i_alarm.name}} | Lookup EC2 instances"
+      ec2_remote_facts:
+        filters: "{{ i_alarm.filter_ec2_fact }}"
+      register: resource_filtered
+
+    - name: "Setup {{i_alarm.name}} | Show resources"
+      debug: var=resource_filtered
+
+    - name: "Setup {{i_alarm.name}} | Set resources"
+      set_fact:
+          ec2_resources: "{{ ec2_resources + [{'name': item.tags.Name, 'id': item.id}] }}"
+      with_items: "{{ resource_filtered.instances }}"
+      when: resource_filtered.instances is defined
+  when: i_alarm.filter_type is defined and i_alarm.filter_type == 'ec2_fact'
+
+- block:
+    - name: "Setup {{i_alarm.name}} | Default lookup - static resources"
+      set_fact:
+          ec2_resources: "{{ ec2_resources + [{'name': item.name, 'id': item.id}] }}"
+      with_items: "{{ i_alarm.ec2_resources }}"
+      when: i_alarm.ec2_resources is defined
+  when: i_alarm.filter_type is not defined
 
 - name: "Setup {{i_alarm.name}} | Add alarm metric for each resource"
   ec2_metric_alarm:
     state: present
     region: "{{ i_alarm.region }}"
-    name: "{{ item.tags.Name }}-{{ i_alarm.name_sufix }}"
-    description: "{{ item.tags.Name }}-{{ i_alarm.name_sufix }} - Created by ansible"
+    name: "{{ item.name }}-{{ i_alarm.name }}"
+    description: "{{ i_alarm.name }}-{{ item.name }} - Created by ansible"
     metric: "{{ i_alarm.metric }}"
     namespace: "{{ i_alarm.namespace }}"
     statistic: "{{ i_alarm.statistic }}"
@@ -31,5 +48,5 @@
     alarm_actions: "{{ i_alarm.alarm_actions }}"
     insufficient_data_actions: "{{ i_alarm.insufficient_data_actions }}"
     ok_actions: "{{ i_alarm.ok_actions }}"
-  with_items: "{{ resource_filtered.results[0].instances }}"
+  with_items: "{{ ec2_resources }}"
   when: i_alarm.namespace == "AWS/EC2"
