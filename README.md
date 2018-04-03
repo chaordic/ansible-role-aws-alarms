@@ -85,6 +85,47 @@ Example Playbook
             insufficient_data_actions: ["arn:aws:sns:us-east-1:<AWS_ACCOUNT_ID>:<SNS_ALERT>"]
             ok_actions: ["arn:aws:sns:us-east-1:<AWS_ACCOUNT_ID>:<SNS_ALERT>"]
 
+
+          - name: aws-cloudfront-low-requests
+            namespace: "AWS/CloudFront"
+            resources:
+              - name: "distribution-name"
+                dimensions:
+                  DistributionId: EF00000000000
+                  Region: Global
+            region: us-east-1
+            metric: "Requests"
+            statistic: Sum
+            comparison: "<="
+            threshold: 100
+            period: 60
+            evaluation_periods: 3
+            unit: "Count"
+            alarm_actions: ["arn:aws:sns:us-east-1:<AWS_ACCOUNT_ID>:<SNS_ALERT>"]
+            insufficient_data_actions: ["arn:aws:sns:us-east-1:<AWS_ACCOUNT_ID>:<SNS_ALERT>"]
+            ok_actions: ["arn:aws:sns:us-east-1:<AWS_ACCOUNT_ID>:<SNS_ALERT>"]
+
+          - name: aws-cloudfront-high-5xx-error-rate
+            namespace: "AWS/CloudFront"
+            resources:
+              - name: "distribution-name"
+                dimensions:
+                  DistributionId: EF00000000000
+                  Region: Global
+            region: us-east-1
+            metric: "5xxErrorRate"
+            statistic: Average
+            comparison: ">="
+            threshold: 0.5
+            period: 60
+            evaluation_periods: 3
+            unit: "Count"
+            alarm_actions: ["arn:aws:sns:us-east-1:<AWS_ACCOUNT_ID>:<SNS_ALERT>"]
+            insufficient_data_actions: ["arn:aws:sns:us-east-1:<AWS_ACCOUNT_ID>:<SNS_ALERT>"]
+            ok_actions: ["arn:aws:sns:us-east-1:<AWS_ACCOUNT_ID>:<SNS_ALERT>"]
+
+
+
       roles:
          - { role: aws-alarms.chaordic }
 
