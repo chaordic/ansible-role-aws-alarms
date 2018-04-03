@@ -7,8 +7,8 @@
   loop_control:
     loop_var: i_alarm
 
-- include: app-elb.yml
+- include: aws.yml
   with_items: "{{ aws_alarms }}"
-  when: i_alarm.namespace == "AWS/ApplicationELB"
+  when: i_alarm.namespace != "AWS/EC2"
   loop_control:
     loop_var: i_alarm
