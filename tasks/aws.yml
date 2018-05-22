@@ -20,6 +20,30 @@
     insufficient_data_actions: "{{ i_alarm.insufficient_data_actions }}"
     ok_actions: "{{ i_alarm.ok_actions }}"
   with_items: "{{ i_alarm.resources }}"
+  when: i_alarm.treat_missing_data is not defined
+  register: ret_alarm
+
+- name: "Setup {{i_alarm.name}} | Add alarm metric for each resource with treat_missing_data"
+  ec2_metric_alarm_with_treat_missing_data:
+    state: present
+    region: "{{ i_alarm.region }}"
+    name: "{{ i_alarm.name }}-{{ item.name }}"
+    description: "{{ i_alarm.name }}-{{ item.name }} - Created by ansible"
+    metric: "{{ i_alarm.metric }}"
+    namespace: "{{ i_alarm.namespace }}"
+    statistic: "{{ i_alarm.statistic }}"
+    comparison: "{{ i_alarm.comparison }}"
+    threshold: "{{ i_alarm.threshold }}"
+    period: "{{ i_alarm.period }}"
+    evaluation_periods: "{{ i_alarm.evaluation_periods }}"
+    unit: "{{ i_alarm.unit }}"
+    dimensions: "{{ item.dimensions }}"
+    treat_missing_data: "{{ i_alarm.treat_missing_data }}"
+    alarm_actions: "{{ i_alarm.alarm_actions }}"
+    insufficient_data_actions: "{{ i_alarm.insufficient_data_actions }}"
+    ok_actions: "{{ i_alarm.ok_actions }}"
+  with_items: "{{ i_alarm.resources }}"
+  when: i_alarm.treat_missing_data is defined
   register: ret_alarm
 
 - debug: var=ret_alarm
