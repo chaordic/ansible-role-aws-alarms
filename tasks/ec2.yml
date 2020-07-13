@@ -8,7 +8,7 @@
 
 - block:
     - name: "Setup {{i_alarm.name}} | Lookup EC2 instances"
-      ec2_remote_facts:
+      ec2_instance_facts:
         filters: "{{ i_alarm.filter_ec2_fact }}"
       register: resource_filtered
 
